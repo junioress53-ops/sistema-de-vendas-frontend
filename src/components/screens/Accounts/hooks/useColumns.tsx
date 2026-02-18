@@ -39,8 +39,13 @@ export function useColumns({
     {
       headerName: 'Tipo',
       field: 'type',
-      valueFormatter: (params: CellFunctionParams<IAccount>) =>
-        params.value === ACCOUNT_TYPE.IN ? 'Entrada' : 'Saída' || '--',
+      valueFormatter: (params: CellFunctionParams<IAccount>) => {
+  if (!params.value) {
+    return '--';
+  }
+  return params.value === ACCOUNT_TYPE.IN ? 'Entrada' : 'Saída';
+},
+
       cellClass: (params) => {
         if (params?.data?.type === ACCOUNT_TYPE.IN) return style.positiveText
 
