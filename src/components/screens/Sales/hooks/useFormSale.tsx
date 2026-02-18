@@ -1,29 +1,30 @@
-import { useForm } from 'react-hook-form'
-import { ISale } from '../../../../models/interfaces/ISale'
-import { httpClientProvider } from '../../../../providers/HttpClientProvider'
-import { salesService } from '../../../../services/salesService'
-import { INewSale, newSaleSchema } from '../interfaces/INewSale'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { ALERT_NOTIFY_TYPE } from '../../../../models/enums/AlertNotifyType'
-import { useRouter } from 'next/router'
-import { ChangeEvent, useContext, useEffect } from 'react'
-import { AlertContext } from '../../../../contexts/alertContext'
-import { productsService } from '../../../../services/productsService'
-import { IProduct } from '../../../../models/interfaces/IProduct'
+import { useForm } from "react-hook-form";
+import { ISale } from "../../../../models/interfaces/ISale";
+import { httpClientProvider } from "../../../../providers/HttpClientProvider";
+import { salesService } from "../../../../services/salesService";
+import { INewSale, newSaleSchema } from "../interfaces/INewSale";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ALERT_NOTIFY_TYPE } from "../../../../models/enums/AlertNotifyType";
+import { useRouter } from "next/router";
+import { ChangeEvent, useContext, useEffect } from "react";
+import { AlertContext } from "../../../../contexts/alertContext";
+import { productsService } from "../../../../services/productsService";
+import { IProduct } from "../../../../models/interfaces/IProduct";
 
 type Props = {
-  handleClose: () => void
-  saleToEditData: ISale | null
-  productsList: IProduct[]
-}
+  handleClose: () => void;
+  saleToEditData: ISale | null;
+  productsList: IProduct[];
+};
 export function useFormSale({
   handleClose,
   saleToEditData,
   productsList,
 }: Props) {
-  const router = useRouter()
+  const router = useRouter();
 
-  const { alertNotifyConfigs, setAlertNotifyConfigs } = useContext(AlertContext)
+  const { alertNotifyConfigs, setAlertNotifyConfigs } =
+    useContext(AlertContext);
 
   const {
     register,
@@ -40,7 +41,7 @@ export function useFormSale({
       totalValue: 0,
     },
     resolver: zodResolver(newSaleSchema),
-  })
+  });
 
   async function onCreateNewSale(newSale: INewSale) {
     await salesService
@@ -50,17 +51,17 @@ export function useFormSale({
           ...alertNotifyConfigs,
           type: ALERT_NOTIFY_TYPE.SUCCESS,
           open: true,
-          text: 'Venda realizada com sucesso',
-        })
+          text: "Venda realizada com sucesso",
+        });
 
-        reset()
+        reset();
 
         router.push({
           pathname: router.route,
           query: router.query,
-        })
+        });
 
-        handleClose()
+        handleClose();
       })
       .catch((err) => {
         setAlertNotifyConfigs({
@@ -68,10 +69,10 @@ export function useFormSale({
           type: ALERT_NOTIFY_TYPE.ERROR,
           open: true,
           text: `Erro ao tentar realizar venda - ${err?.message}`,
-        })
+        });
 
-        console.error(err)
-      })
+        console.error(err);
+      });
   }
 
   async function onEditSale(sale: INewSale) {
@@ -82,72 +83,72 @@ export function useFormSale({
           ...alertNotifyConfigs,
           type: ALERT_NOTIFY_TYPE.SUCCESS,
           open: true,
-          text: 'Venda atualizada com sucesso',
-        })
+          text: "Venda atualizada com sucesso",
+        });
 
-        reset()
+        reset();
 
         router.push({
           pathname: router.route,
           query: router.query,
-        })
+        });
 
-        handleClose()
+        handleClose();
       })
       .catch((err) => {
         setAlertNotifyConfigs({
           ...alertNotifyConfigs,
           type: ALERT_NOTIFY_TYPE.ERROR,
           open: true,
-          text: 'Erro ao tentar atualizar venda' + err?.message,
-        })
-        console.log('[ERROR]: ', err?.message)
-      })
+          text: "Erro ao tentar atualizar venda" + err?.message,
+        });
+        console.log("[ERROR]: ", err?.message);
+      });
   }
 
   function handleAddNewProduct(event: any) {
-    const { value } = event.target
-    const newProduct = productsList.find((prodItem) => prodItem?._id === value)
-    if (!newProduct) return
+    const { value } = event.target;
+    const newProduct = productsList.find((prodItem) => prodItem?._id === value);
+    if (!newProduct) return;
 
     const alreadExistProductInList = !!products.find(
-      (product) => product?._id === newProduct?._id,
-    )
-    if (alreadExistProductInList) return
+      (product) => product?._id === newProduct?._id
+    );
+    if (alreadExistProductInList) return;
 
-    newProduct.amount = 1
+    newProduct.amount = 1;
 
-    setValue('products', [...products, newProduct])
+    setValue("products", [...products, newProduct]);
   }
 
   function handleChangeProduct(
     event: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
-    index: number,
+    index: number
   ) {
-    const { name, value } = event.target
+    const { name, value } = event.target;
 
-    const copyProducts: any[] = [...products]
+    const copyProducts: any[] = [...products];
 
-    copyProducts[index][name] = Number(value)
+    copyProducts[index][name] = Number(value);
 
-    setValue('products', copyProducts)
+    setValue("products", copyProducts);
   }
 
   function handleRemoveProduct(productId: string) {
-    const filteredProducts = products.filter((prod) => prod._id !== productId)
+    const filteredProducts = products.filter((prod) => prod._id !== productId);
 
-    setValue('products', filteredProducts)
+    setValue("products", filteredProducts);
   }
 
-  const products = watch('products')
+  const products = watch("products");
 
   const totalValue = products?.reduce((acc, prod) => {
-    acc += Number(prod.value) * Number(prod.amount)
-    return acc
-  }, 0)
+    acc += Number(prod.value) * Number(prod.amount);
+    return acc;
+  }, 0);
 
   useEffect(() => {
-    console.log('errors', errors)
+    console.log("errors", errors);
 
     if (errors.products) {
       setAlertNotifyConfigs({
@@ -155,30 +156,30 @@ export function useFormSale({
         type: ALERT_NOTIFY_TYPE.ERROR,
         open: true,
         text: String(errors.products.message),
-      })
+      });
     }
-  }, [errors.products])
+  }, [errors.products]);
 
   useEffect(() => {
     if (!saleToEditData)
       productsService
         .getDefaultProducts(httpClientProvider)
         .then(({ data: { items } }) => {
-          const defaultProducts = items
+          const defaultProducts = items;
 
           const defaultProductsList = defaultProducts.map(
             (product: IProduct) => ({
               ...product,
               amount: 1,
-            }),
-          )
+            })
+          );
 
-          setValue('products', defaultProductsList)
+          setValue("products", defaultProductsList);
         })
         .catch((err) => {
-          console.log('ERRO AO BUSCAR PRODUTO PADRÃO, ' + err?.message)
-        })
-  }, [saleToEditData])
+          console.log("ERRO AO BUSCAR PRODUTO PADRÃO, " + err?.message);
+        });
+  }, [saleToEditData]);
 
   return {
     onEditSale,
@@ -193,5 +194,5 @@ export function useFormSale({
     handleAddNewProduct,
     handleChangeProduct,
     handleRemoveProduct,
-  }
+  };
 }

@@ -1,20 +1,20 @@
-import { ModalLayout } from '../../../_ui/ModalLayout'
-import style from './ModalCreateNewSale.module.scss'
-import { CustomTextField } from '../../../_ui/CustomTextField'
-import { Autocomplete, MenuItem } from '@mui/material'
-import { paymentTypeList } from '../../../../models/constants/PaymentTypeList'
-import { format } from '../../../../utils/format'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faTrash } from '@fortawesome/free-solid-svg-icons'
-import { ISale } from '../../../../models/interfaces/ISale'
-import { useClientList } from '../../../../hooks/useClientList'
-import { useFormSale } from '../hooks/useFormSale'
-import { useProductList } from '../../../../hooks/useProductList'
+import { ModalLayout } from "../../../_ui/ModalLayout";
+import style from "./ModalCreateNewSale.module.scss";
+import { CustomTextField } from "../../../_ui/CustomTextField";
+import { Autocomplete, MenuItem } from "@mui/material";
+import { paymentTypeList } from "../../../../models/constants/PaymentTypeList";
+import { format } from "../../../../utils/format";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { ISale } from "../../../../models/interfaces/ISale";
+import { useClientList } from "../../../../hooks/useClientList";
+import { useFormSale } from "../hooks/useFormSale";
+import { useProductList } from "../../../../hooks/useProductList";
 
 interface Props {
-  saleToEditData: ISale | null
-  open: boolean
-  handleClose: () => void
+  saleToEditData: ISale | null;
+  open: boolean;
+  handleClose: () => void;
 }
 
 export function ModalCreateNewSale({
@@ -22,8 +22,8 @@ export function ModalCreateNewSale({
   handleClose,
   saleToEditData,
 }: Props) {
-  const { products: productsList } = useProductList()
-  const { clients: clientsList } = useClientList()
+  const { products: productsList } = useProductList();
+  const { clients: clientsList } = useClientList();
 
   const {
     errors,
@@ -42,15 +42,15 @@ export function ModalCreateNewSale({
     handleClose,
     saleToEditData,
     productsList,
-  })
+  });
 
   return (
     <ModalLayout
       open={open}
       handleClose={handleClose}
       onSubmit={handleSubmit(saleToEditData ? onEditSale : onCreateNewSale)}
-      title={saleToEditData ? 'Editar venda' : 'Realizar nova venda'}
-      submitButtonText={saleToEditData ? 'Atualizar' : 'Finalizar'}
+      title={saleToEditData ? "Editar venda" : "Realizar nova venda"}
+      submitButtonText={saleToEditData ? "Atualizar" : "Finalizar"}
       loading={isSubmitting}
     >
       <div className={style.content}>
@@ -64,7 +64,7 @@ export function ModalCreateNewSale({
               noOptionsText="Nenhum cliente encontrado"
               loadingText="Buscando clientes..."
               onChange={(event, value) => {
-                setValue('clientId', value?._id || null)
+                setValue("clientId", value?._id || null);
               }}
               getOptionLabel={(client) => client.name}
               renderInput={(params) => (
@@ -85,16 +85,16 @@ export function ModalCreateNewSale({
               label="Forma de pagamento *"
               select
               placeholder="Escolha a forma de pagamento"
-              {...register('paymentType')}
+              {...register("paymentType")}
               error={!!errors.paymentType}
               helperText={errors.paymentType && errors.paymentType.message}
             >
               {paymentTypeList.map(({ text, value }) => {
                 return (
                   <MenuItem key={value} value={value}>
-                    {text || '--'}
+                    {text || "--"}
                   </MenuItem>
-                )
+                );
               })}
             </CustomTextField>
 
@@ -109,9 +109,9 @@ export function ModalCreateNewSale({
               {productsList.map(({ _id, name }) => {
                 return (
                   <MenuItem key={_id} value={_id}>
-                    {name || '--'}
+                    {name || "--"}
                   </MenuItem>
-                )
+                );
               })}
             </CustomTextField>
           </div>
@@ -138,7 +138,7 @@ export function ModalCreateNewSale({
                       name="amount"
                       type="number"
                       onChange={(event) => {
-                        handleChangeProduct(event, index)
+                        handleChangeProduct(event, index);
                       }}
                     />
                     <CustomTextField
@@ -150,19 +150,19 @@ export function ModalCreateNewSale({
                       value={product?.value}
                       name="value"
                       onChange={(event) => {
-                        handleChangeProduct(event, index)
+                        handleChangeProduct(event, index);
                       }}
                     />
 
                     <FontAwesomeIcon
                       onClick={() => {
-                        handleRemoveProduct(product?._id)
+                        handleRemoveProduct(product?._id);
                       }}
                       className={style.removeProductIcon}
                       icon={faTrash}
                     />
                   </li>
-                )
+                );
               })}
             </ul>
           ) : (
@@ -173,5 +173,5 @@ export function ModalCreateNewSale({
         </section>
       </div>
     </ModalLayout>
-  )
+  );
 }
